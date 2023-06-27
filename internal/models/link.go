@@ -16,17 +16,17 @@ type CreateLinkDto struct {
 var ErrLinkNotFound = errors.New("link not found")
 
 const (
-	LinkSymbols    = "0123456789_AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz"
-	LinkSymbolsLen = len(LinkSymbols)
+	linkSymbols    = "0123456789_AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz"
+	linkSymbolsLen = len(linkSymbols)
 )
 
 func GenerateLinkCodeByURL(url string) string {
-	var hash [int8(10)]byte
+	var hash [10]byte
 	hashPosNumber := int8(0)
 	for urlSymbolPos, urlSymbol := range url {
 		currentHashValue := hash[hashPosNumber]
-		newHashValueSymbolPos := int(int32(currentHashValue)+int32(urlSymbolPos)+urlSymbol) % LinkSymbolsLen
-		newHashValue := LinkSymbols[newHashValueSymbolPos]
+		newHashValueSymbolPos := int(int32(currentHashValue)+int32(urlSymbolPos)+urlSymbol) % linkSymbolsLen
+		newHashValue := linkSymbols[newHashValueSymbolPos]
 
 		hash[hashPosNumber] = newHashValue
 		if hashPosNumber++; hashPosNumber >= 10 {
@@ -36,7 +36,7 @@ func GenerateLinkCodeByURL(url string) string {
 
 	if len(url) < 10 {
 		for i := len(url); i < 10; i++ {
-			hash[i] = LinkSymbols[0]
+			hash[i] = linkSymbols[0]
 		}
 	}
 

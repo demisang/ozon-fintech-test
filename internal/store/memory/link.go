@@ -9,8 +9,9 @@ import (
 	"github.com/demisang/ozon-fintech-test/internal/store"
 )
 
+var _ store.Link = (*LinkStorage)(nil)
+
 type LinkStorage struct {
-	store.Link
 	memory *Memory
 }
 
