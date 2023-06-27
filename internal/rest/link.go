@@ -7,7 +7,7 @@ import (
 	"regexp"
 	"strings"
 
-	"ozon-fintech-test/internal/models"
+	"github.com/demisang/ozon-fintech-test/internal/models"
 )
 
 const shortLinkInvalidPattern = `[^a-zA-Z\d_]+`
@@ -17,6 +17,7 @@ type CreateLinkRequest struct {
 }
 
 func (s *Server) linkCreate(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
 	var request CreateLinkRequest
 	err := json.NewDecoder(r.Body).Decode(&request)
 	if err != nil {
@@ -29,12 +30,13 @@ func (s *Server) linkCreate(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	link, err := s.app.Storage.Create(s.ctx, models.CreateLinkDto{URL: *request.URL})
+	link, err := s.app.Storage.Create(ctx, models.CreateLinkDto{URL: *request.URL})
 
 	response(w, r, 201, link)
 }
 
 func (s *Server) linkGet(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
 	if r.Method != http.MethodGet {
 		errResponse(w, r, http.StatusMethodNotAllowed, errors.New("method not allowed"))
 		return
@@ -57,7 +59,7 @@ func (s *Server) linkGet(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	link, err := s.app.Storage.GetByCode(s.ctx, linkCode)
+	link, err := s.app.Storage.GetByCode(ctx, linkCode)
 
 	switch {
 	case errors.Is(err, models.ErrLinkNotFound):

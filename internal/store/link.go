@@ -3,7 +3,7 @@ package store
 import (
 	"context"
 
-	"ozon-fintech-test/internal/models"
+	"github.com/demisang/ozon-fintech-test/internal/models"
 )
 
 type Link interface {

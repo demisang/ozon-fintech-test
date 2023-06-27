@@ -5,9 +5,9 @@ import (
 	"errors"
 	"fmt"
 
+	"github.com/demisang/ozon-fintech-test/internal/models"
+	"github.com/demisang/ozon-fintech-test/internal/store"
 	"github.com/jackc/pgx/v5"
-	"ozon-fintech-test/internal/models"
-	"ozon-fintech-test/internal/store"
 )
 
 type LinkStorage struct {
@@ -15,7 +15,7 @@ type LinkStorage struct {
 	db *DB
 }
 
-func NewLinkStorage(db *DB) *LinkStorage {
+func newLinkStorage(db *DB) *LinkStorage {
 	return &LinkStorage{
 		db: db,
 	}

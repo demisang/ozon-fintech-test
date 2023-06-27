@@ -5,8 +5,8 @@ import (
 	"errors"
 	"fmt"
 
-	"ozon-fintech-test/internal/models"
-	"ozon-fintech-test/internal/store"
+	"github.com/demisang/ozon-fintech-test/internal/models"
+	"github.com/demisang/ozon-fintech-test/internal/store"
 )
 
 type LinkStorage struct {
@@ -14,7 +14,7 @@ type LinkStorage struct {
 	memory *Memory
 }
 
-func NewLinkStorage(memory *Memory) *LinkStorage {
+func newLinkStorage(memory *Memory) *LinkStorage {
 	return &LinkStorage{
 		memory: memory,
 	}

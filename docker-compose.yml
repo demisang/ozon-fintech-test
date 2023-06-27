@@ -1,9 +1,17 @@
-version: "3.9"
+version: "3.8"
 
 services:
+  app:
+    build:
+      labels: [ "ozon_fintech_test_app" ]
+      context: .
+    container_name: "ozon_fintech_test_app"
+    ports:
+      - "8382:8382"
 
   db:
     image: postgres:14.2-alpine
+    container_name: "ozon_fintech_test_db"
     environment:
       POSTGRES_DB: ozon_fintech
       POSTGRES_USER: user

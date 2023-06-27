@@ -8,21 +8,19 @@ import (
 )
 
 type Memory struct {
-	ctx   context.Context
 	log   *logrus.Entry
 	links map[string]string
 }
 
 var ErrNotExists = errors.New("not exists")
 
-func New(ctx context.Context, log *logrus.Logger) (*Memory, error) {
+func New(log *logrus.Logger) *LinkStorage {
 	memory := Memory{
-		ctx:   ctx,
 		log:   log.WithField("module", "store"),
 		links: make(map[string]string),
 	}
 
-	return &memory, nil
+	return newLinkStorage(&memory)
 }
 
 func (m *Memory) get(_ context.Context, key string) (string, error) {

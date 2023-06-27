@@ -6,12 +6,15 @@ import (
 	"os/signal"
 	"syscall"
 
+	"github.com/demisang/ozon-fintech-test/internal/application"
+	"github.com/demisang/ozon-fintech-test/internal/config"
+	"github.com/demisang/ozon-fintech-test/internal/rest"
+	"github.com/demisang/ozon-fintech-test/internal/store"
+	"github.com/demisang/ozon-fintech-test/internal/store/db"
+	"github.com/demisang/ozon-fintech-test/internal/store/memory"
+	"github.com/demisang/ozon-fintech-test/pkg/logger"
 	"github.com/sirupsen/logrus"
 	"golang.org/x/sync/errgroup"
-	"ozon-fintech-test/internal/application"
-	"ozon-fintech-test/internal/config"
-	"ozon-fintech-test/internal/rest"
-	"ozon-fintech-test/pkg/logger"
 )
 
 func main() {
@@ -31,18 +34,39 @@ func run() error {
 	ctx, cancel := signal.NotifyContext(context.Background(), syscall.SIGINT, syscall.SIGTERM)
 	defer cancel()
 
-	app, err := application.NewApp(log, cfg)
+	// Init storage
+	var storage store.Link
+
+	switch cfg.Storage {
+	case "db":
+		storage, err = db.New(ctx, log, cfg.Database)
+
+		if err != nil {
+			return fmt.Errorf("database storage: %w", err)
+		}
+	case "memory":
+		storage = memory.New(log)
+	default:
+		return fmt.Errorf("unknown storage '%s'", cfg.Storage)
+	}
+
+	// Init app
+	app, err := application.NewApp(log, cfg, storage)
 	if err != nil {
 		return fmt.Errorf("new application: %w", err)
 	}
 
+	// Init server
 	server := rest.NewServer(log, app, cfg.Server.Host, cfg.Server.Port)
 
+	// Run
 	eg, ctx := errgroup.WithContext(ctx)
 
 	eg.Go(func() error {
 		return server.Run(ctx)
 	})
+
+	// TODO gRPC here
 
 	return eg.Wait()
 }

@@ -10,6 +10,8 @@ FROM alpine:3.18
 
 EXPOSE 8382
 
+RUN apk update && apk add busybox-extras curl
+
 COPY --from=builder /src/links /app/
 COPY --from=builder /src/config/main.example.yml /app/config/main.yml
 

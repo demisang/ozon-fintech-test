@@ -16,8 +16,12 @@ storage: "memory"
 ### Run:
 
 ```shell
-docker-compose up
-go run cmd/main.go --config=$PWD/config/main.yml
+docker-compose up -d db
+
+
+docker-compose up -d db app
+
+go run cmd/links-service/main.go --config=$PWD/config/main.yml
 ```
 
 ### Database:
