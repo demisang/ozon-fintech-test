@@ -1,0 +1,16 @@
+# Server configurations
+server:
+  host: "localhost"
+  port: 8382
+
+# Storage "db" or "memory"
+storage: "db"
+shortLinkLength: 10
+
+# Database credentials
+database:
+  host: "localhost"
+  port: "5437"
+  user: "user"
+  pass: "12345"
+  dbName: "ozon_fintech"

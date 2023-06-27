@@ -1,0 +1,30 @@
+version: "3.9"
+
+services:
+
+  db:
+    image: postgres:14.2-alpine
+    environment:
+      POSTGRES_DB: ozon_fintech
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: 12345
+      PGDATA: "/var/lib/postgresql/data/pgdata"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    ports:
+      - "5437:5432"
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U user -d ozon_fintech" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    restart: no
+    deploy:
+      resources:
+        limits:
+          cpus: '1'
+          memory: 4G
+
+volumes:
+  pgdata:
