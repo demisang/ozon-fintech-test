@@ -6,8 +6,8 @@ import (
 	"fmt"
 
 	"github.com/jackc/pgx/v5"
+	"ozon-fintech-test/internal/models"
 	"ozon-fintech-test/internal/store"
-	"ozon-fintech-test/models"
 )
 
 type LinkStorage struct {
@@ -24,7 +24,7 @@ func NewLinkStorage(db *DB) *LinkStorage {
 func (s *LinkStorage) GetByCode(ctx context.Context, code string) (link models.Link, err error) {
 	query := `SELECT url FROM links WHERE code=$1`
 
-	err = s.db.db.QueryRow(ctx, query, code).Scan(&link.Url)
+	err = s.db.db.QueryRow(ctx, query, code).Scan(&link.URL)
 
 	switch {
 	case errors.Is(err, pgx.ErrNoRows):
@@ -41,10 +41,10 @@ func (s *LinkStorage) GetByCode(ctx context.Context, code string) (link models.L
 func (s *LinkStorage) Create(ctx context.Context, createDto models.CreateLinkDto) (link models.Link, err error) {
 	query := `INSERT INTO links(code, url) VALUES ($1, $2) ON CONFLICT DO NOTHING`
 
-	link.Url = createDto.Url
-	link.Code = models.GenerateLinkCodeByUrl(createDto.Url)
+	link.URL = createDto.URL
+	link.Code = models.GenerateLinkCodeByURL(createDto.URL)
 
-	_, err = s.db.db.Exec(ctx, query, link.Code, createDto.Url)
+	_, err = s.db.db.Exec(ctx, query, link.Code, createDto.URL)
 	if err != nil {
 		return link, fmt.Errorf("insert link error: %w", err)
 	}

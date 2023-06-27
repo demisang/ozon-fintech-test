@@ -20,7 +20,7 @@ docker-compose up
 go run cmd/main.go --config=$PWD/config/main.yml
 ```
 
-### Db:
+### Database:
 
 `postgres://user:12345@localhost:5437/ozon_fintech?sslmode=disable`
 
@@ -39,7 +39,7 @@ migrate -path migrations -database postgres://user:12345@localhost:5437/ozon_fin
 ```shell
 # Create new Link
 curl --request POST \
-  --url http://localhost:3333/create \
+  --url http://localhost:8382/create \
   --header 'Content-Type: application/json' \
   --data '{
 	"url": "https://www.google.com/search?q=%D0%9A%D0%B0%D0%BA+%D0%B8%D1%81%D0%BA%D0%B0%D1%82%D1%8C+%D0%B2+%D0%B3%D1%83%D0%B3%D0%BB%D0%B5"
@@ -47,5 +47,5 @@ curl --request POST \
 
 # Get Link by Code
 curl --request GET \
-  --url http://localhost:3333/KiANRJctbf
+  --url http://localhost:8382/KiANRJctbf
 ```

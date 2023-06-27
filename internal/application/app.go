@@ -25,7 +25,7 @@ func NewApp(log *logrus.Logger, cfg config.Config) (*App, error) {
 	ctx := context.Background()
 	switch cfg.Storage {
 	case "db":
-		storage, err = NewDbStorage(ctx, log, cfg.Database)
+		storage, err = NewDBStorage(ctx, log, cfg.Database)
 	case "memory":
 		storage, err = NewMemoryStorage(ctx, log)
 	default:
@@ -45,7 +45,7 @@ func NewApp(log *logrus.Logger, cfg config.Config) (*App, error) {
 	return &a, nil
 }
 
-func NewDbStorage(ctx context.Context, log *logrus.Logger, dbConfig config.Database) (*db.LinkStorage, error) {
+func NewDBStorage(ctx context.Context, log *logrus.Logger, dbConfig config.Database) (*db.LinkStorage, error) {
 	dsn := url.URL{
 		Scheme:   "postgresql",
 		User:     url.UserPassword(dbConfig.Username, dbConfig.Password),

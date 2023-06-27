@@ -7,7 +7,7 @@ import (
 	"regexp"
 	"strings"
 
-	"ozon-fintech-test/models"
+	"ozon-fintech-test/internal/models"
 )
 
 const shortLinkInvalidPattern = `[^a-zA-Z\d_]+`
@@ -29,10 +29,11 @@ func (s *Server) linkCreate(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	link, err := s.app.Storage.Create(s.ctx, models.CreateLinkDto{Url: *request.URL})
+	link, err := s.app.Storage.Create(s.ctx, models.CreateLinkDto{URL: *request.URL})
 
 	response(w, r, 201, link)
 }
+
 func (s *Server) linkGet(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodGet {
 		errResponse(w, r, http.StatusMethodNotAllowed, errors.New("method not allowed"))

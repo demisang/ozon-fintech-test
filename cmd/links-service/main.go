@@ -14,11 +14,6 @@ import (
 	"ozon-fintech-test/pkg/logger"
 )
 
-const (
-	shortLinkLength         = 10
-	shortLinkInvalidPattern = `[^a-zA-Z\d_]+`
-)
-
 func main() {
 	if err := run(); err != nil {
 		logrus.Fatal(err)

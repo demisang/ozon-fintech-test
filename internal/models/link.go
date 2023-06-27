@@ -6,19 +6,21 @@ import (
 
 type Link struct {
 	Code string `json:"code"`
-	Url  string `json:"url"`
+	URL  string `json:"url"`
 }
 
 type CreateLinkDto struct {
-	Url string `json:"url"`
+	URL string `json:"url"`
 }
 
 var ErrLinkNotFound = errors.New("link not found")
 
-const LinkSymbols = "0123456789_AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz"
-const LinkSymbolsLen = len(LinkSymbols)
+const (
+	LinkSymbols    = "0123456789_AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz"
+	LinkSymbolsLen = len(LinkSymbols)
+)
 
-func GenerateLinkCodeByUrl(url string) string {
+func GenerateLinkCodeByURL(url string) string {
 	var hash [int8(10)]byte
 	hashPosNumber := int8(0)
 	for urlSymbolPos, urlSymbol := range url {

@@ -8,7 +8,6 @@ import (
 	"io"
 	"net/http"
 	"os"
-	"time"
 
 	"github.com/sirupsen/logrus"
 	"ozon-fintech-test/internal/application"
@@ -23,58 +22,32 @@ type Server struct {
 	server *http.Server
 }
 
-const (
-	defaultReadHeaderTimeout = 30 * time.Second
-	gracefulShutdownTimeout  = 10 * time.Second
-)
-
 func NewServer(log *logrus.Logger, app *application.App, host string, port int) *Server {
-	server := Server{
+	return &Server{
 		ctx:  context.Background(),
 		log:  log.WithField("module", "rest"),
 		app:  app,
 		host: host,
 		port: port,
 	}
+}
 
-	http.HandleFunc("/create", server.linkCreate)
-	http.HandleFunc("/", server.linkGet)
+func (s *Server) Run(_ context.Context) error {
+	http.HandleFunc("/create", s.linkCreate)
+	http.HandleFunc("/", s.linkGet)
 
-	err := http.ListenAndServe(":3333", nil)
+	err := http.ListenAndServe(fmt.Sprintf("%s:%d", s.host, s.port), nil)
 	if errors.Is(err, http.ErrServerClosed) {
 		fmt.Printf("server closed\n")
 	} else if err != nil {
 		fmt.Printf("error starting server: %s\n", err)
 		os.Exit(1)
 	}
-	server.server = &http.Server{
-		Addr:              fmt.Sprintf("%s:%d", host, port),
-		ReadHeaderTimeout: defaultReadHeaderTimeout,
-	}
-
-	return &server
-}
-
-func (s *Server) Run(ctx context.Context) error {
-	go func() {
-		<-ctx.Done()
-
-		ctx, cancel := context.WithTimeout(context.Background(), gracefulShutdownTimeout)
-		defer cancel()
-
-		if err := s.server.Shutdown(ctx); err != nil {
-			s.log.Warnf("closing server: %v", err)
-		}
-	}()
-
-	if err := s.server.ListenAndServe(); err != nil && !errors.Is(err, http.ErrServerClosed) {
-		return fmt.Errorf("server error: %w", err)
-	}
 
 	return nil
 }
 
-func errResponse(w http.ResponseWriter, r *http.Request, statusCode int, err error) {
+func errResponse(w http.ResponseWriter, _ *http.Request, statusCode int, err error) {
 	http.Error(w, err.Error(), statusCode)
 }
 

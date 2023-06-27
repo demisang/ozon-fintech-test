@@ -5,8 +5,8 @@ import (
 	"errors"
 	"fmt"
 
+	"ozon-fintech-test/internal/models"
 	"ozon-fintech-test/internal/store"
-	"ozon-fintech-test/models"
 )
 
 type LinkStorage struct {
@@ -31,17 +31,17 @@ func (s *LinkStorage) GetByCode(ctx context.Context, code string) (link models.L
 	}
 
 	link.Code = code
-	link.Url = url
+	link.URL = url
 
 	return link, nil
 }
 
 func (s *LinkStorage) Create(ctx context.Context, createDto models.CreateLinkDto) (models.Link, error) {
-	code := models.GenerateLinkCodeByUrl(createDto.Url)
-	s.memory.set(ctx, code, createDto.Url)
+	code := models.GenerateLinkCodeByURL(createDto.URL)
+	s.memory.set(ctx, code, createDto.URL)
 
 	return models.Link{
 		Code: code,
-		Url:  createDto.Url,
+		URL:  createDto.URL,
 	}, nil
 }
