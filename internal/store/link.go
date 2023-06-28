@@ -8,5 +8,5 @@ import (
 
 type Link interface {
 	GetByCode(ctx context.Context, code string) (models.Link, error)
-	Create(ctx context.Context, createDto models.CreateLinkDto) (models.Link, error)
+	Create(ctx context.Context, createDto models.CreateLinkDTO) (models.Link, error)
 }

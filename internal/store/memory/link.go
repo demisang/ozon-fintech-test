@@ -37,7 +37,7 @@ func (s *LinkStorage) GetByCode(ctx context.Context, code string) (link models.L
 	return link, nil
 }
 
-func (s *LinkStorage) Create(ctx context.Context, createDto models.CreateLinkDto) (models.Link, error) {
+func (s *LinkStorage) Create(ctx context.Context, createDto models.CreateLinkDTO) (models.Link, error) {
 	code := models.GenerateLinkCodeByURL(createDto.URL)
 	s.memory.set(ctx, code, createDto.URL)
 

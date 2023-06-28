@@ -27,7 +27,7 @@ func TestMemoryStorage(t *testing.T) {
 			wg.Add(1)
 			go func() {
 				defer wg.Done()
-				tmp, err := storage.Create(ctx, models.CreateLinkDto{URL: "stroka" + strconv.Itoa(i)})
+				tmp, err := storage.Create(ctx, models.CreateLinkDTO{URL: "stroka" + strconv.Itoa(i)})
 				require.NoError(t, err)
 				localStorage[i] = tmp
 			}()

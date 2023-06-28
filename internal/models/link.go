@@ -9,7 +9,7 @@ type Link struct {
 	URL  string `json:"url"`
 }
 
-type CreateLinkDto struct {
+type CreateLinkDTO struct {
 	URL string `json:"url"`
 }
 
@@ -36,7 +36,7 @@ func GenerateLinkCodeByURL(url string) string {
 
 	if len(url) < 10 {
 		for i := len(url); i < 10; i++ {
-			hash[i] = linkSymbols[0]
+			hash[i] = linkSymbols[len(url)]
 		}
 	}
 

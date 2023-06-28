@@ -30,7 +30,7 @@ func (s *Server) linkCreate(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	link, err := s.app.Storage.Create(ctx, models.CreateLinkDto{URL: *request.URL})
+	link, err := s.app.Storage.Create(ctx, models.CreateLinkDTO{URL: *request.URL})
 
 	response(w, r, 201, link)
 }

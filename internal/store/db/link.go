@@ -38,7 +38,7 @@ func (s *LinkStorage) GetByCode(ctx context.Context, code string) (link models.L
 	return link, nil
 }
 
-func (s *LinkStorage) Create(ctx context.Context, createDto models.CreateLinkDto) (link models.Link, err error) {
+func (s *LinkStorage) Create(ctx context.Context, createDto models.CreateLinkDTO) (link models.Link, err error) {
 	query := `INSERT INTO links(code, url) VALUES ($1, $2) ON CONFLICT DO NOTHING`
 
 	link.URL = createDto.URL

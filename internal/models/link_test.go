@@ -22,6 +22,16 @@ func TestGenerateLinkCodeByURL(t *testing.T) {
 			name: "empty_url",
 			hash: "0000000000",
 		},
+		{
+			name: "url_8",
+			url:  "stroka9",
+			hash: "uvVUsO0777",
+		},
+		{
+			name: "url_18",
+			url:  "stroka98",
+			hash: "uvVUsO0088",
+		},
 	}
 
 	for _, test := range tests {

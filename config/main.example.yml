@@ -1,6 +1,6 @@
 # Server configurations
 server:
-  host: "localhost"
+  host: "0.0.0.0"
   port: 8382
 
 # Storage "db" or "memory"
@@ -9,7 +9,7 @@ shortLinkLength: 10
 
 # Database credentials
 database:
-  host: "localhost"
+  host: "db"
   port: "5432"
   user: "user"
   pass: "12345"
