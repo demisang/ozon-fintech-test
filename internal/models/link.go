@@ -2,7 +2,12 @@ package models
 
 import (
 	"errors"
+	"regexp"
 )
+
+const shortLinkInvalidPattern = `[^a-zA-Z\d_]+`
+
+var CompiledTemplate = regexp.MustCompile(shortLinkInvalidPattern)
 
 type Link struct {
 	Code string `json:"code"`
@@ -22,6 +27,7 @@ const (
 
 func GenerateLinkCodeByURL(url string) string {
 	var hash [10]byte
+
 	hashPosNumber := int8(0)
 	for urlSymbolPos, urlSymbol := range url {
 		currentHashValue := hash[hashPosNumber]
@@ -29,6 +35,7 @@ func GenerateLinkCodeByURL(url string) string {
 		newHashValue := linkSymbols[newHashValueSymbolPos]
 
 		hash[hashPosNumber] = newHashValue
+
 		if hashPosNumber++; hashPosNumber >= 10 {
 			hashPosNumber = 0
 		}

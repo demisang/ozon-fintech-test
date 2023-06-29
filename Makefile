@@ -22,3 +22,6 @@ lint: fmt tidy
 test: up
 	go test -v -count=10 -race ./...
 	make down
+
+gen:
+	go generate ./...

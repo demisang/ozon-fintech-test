@@ -4,7 +4,7 @@ server:
   port: 8382
 
 # Storage "db" or "memory"
-storage: "db"
+storage: "memory"
 shortLinkLength: 10
 
 # Database credentials

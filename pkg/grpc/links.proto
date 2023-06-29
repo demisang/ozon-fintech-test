@@ -1,0 +1,23 @@
+syntax = "proto3";
+
+option go_package = "/gen";
+
+package linksgen;
+
+service Links {
+  rpc GetLink (GetLinkParams) returns (Link) {}
+  rpc CreateLink (CreateLinkParams) returns (Link) {}
+}
+
+message GetLinkParams {
+  string code = 1;
+}
+
+message CreateLinkParams {
+  string url = 1;
+}
+
+message Link {
+  string code = 1;
+  string url = 2;
+}

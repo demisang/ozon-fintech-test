@@ -9,37 +9,49 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/demisang/ozon-fintech-test/internal/application"
+	"github.com/demisang/ozon-fintech-test/internal/models"
 	"github.com/sirupsen/logrus"
 )
 
+type app interface {
+	LinkGet(ctx context.Context, code string) (models.Link, error)
+	LinkCreate(ctx context.Context, createDto models.CreateLinkDTO) (models.Link, error)
+	ValidateLinkCodeLength(code string) bool
+}
+
 type Server struct {
 	log    *logrus.Entry
-	app    *application.App
+	app    app
 	server *http.Server
 }
 
-func NewServer(log *logrus.Logger, app *application.App, host string, port int) *Server {
+const (
+	readHeaderTimeout = 30 * time.Second
+)
+
+func NewServer(log *logrus.Logger, app app, host string, port int) *Server {
 	s := Server{
 		log: log.WithField("module", "rest"),
 		app: app,
 	}
 	addr := fmt.Sprintf("%s:%d", host, port)
 	mux := http.NewServeMux()
-	mux.HandleFunc("/create", s.exampleMiddleware(http.HandlerFunc(s.linkCreate)).ServeHTTP)
-	mux.HandleFunc("/", s.exampleMiddleware(http.HandlerFunc(s.linkGet)).ServeHTTP)
+	mux.HandleFunc("/create", s.loggingMiddleware(http.HandlerFunc(s.linkCreate)).ServeHTTP)
+	mux.HandleFunc("/", s.loggingMiddleware(http.HandlerFunc(s.linkGet)).ServeHTTP)
 
-	s.server = &http.Server{Addr: addr, Handler: mux}
+	s.server = &http.Server{Addr: addr, Handler: mux, ReadHeaderTimeout: readHeaderTimeout}
 
 	return &s
 }
 
-func (s *Server) exampleMiddleware(next http.Handler) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+func (s *Server) loggingMiddleware(next http.Handler) http.Handler {
+	fn := func(w http.ResponseWriter, r *http.Request) {
 		s.log.Infof("request %s", r.RequestURI)
 
 		next.ServeHTTP(w, r)
-	})
+	}
+
+	return http.HandlerFunc(fn)
 }
 
 func (s *Server) Run(ctx context.Context) error {
@@ -56,6 +68,7 @@ func (s *Server) Run(ctx context.Context) error {
 	}()
 
 	s.log.Infof("starting server %s", s.server.Addr)
+
 	err := s.server.ListenAndServe()
 	if errors.Is(err, http.ErrServerClosed) {
 		s.log.Info("server closed")
@@ -78,9 +91,5 @@ func response(w http.ResponseWriter, r *http.Request, statusCode int, content an
 	}
 
 	w.WriteHeader(statusCode)
-	_, err = io.WriteString(w, string(body))
-	if err != nil {
-		errResponse(w, r, http.StatusInternalServerError, err)
-		return
-	}
+	_, _ = io.WriteString(w, string(body))
 }

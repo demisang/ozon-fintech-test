@@ -23,6 +23,7 @@ func New(ctx context.Context, log *logrus.Logger, dbConfig config.Database) (*Li
 		Path:     dbConfig.DBName,
 		RawQuery: "sslmode=disable",
 	}
+
 	cfg, err := pgxpool.ParseConfig(dsn.String())
 	if err != nil {
 		return nil, fmt.Errorf("pgsql error: %w", err)

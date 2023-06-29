@@ -4,21 +4,18 @@ import (
 	"encoding/json"
 	"errors"
 	"net/http"
-	"regexp"
 	"strings"
 
 	"github.com/demisang/ozon-fintech-test/internal/models"
 )
-
-const shortLinkInvalidPattern = `[^a-zA-Z\d_]+`
 
 type CreateLinkRequest struct {
 	URL *string `json:"url"`
 }
 
 func (s *Server) linkCreate(w http.ResponseWriter, r *http.Request) {
-	ctx := r.Context()
 	var request CreateLinkRequest
+
 	err := json.NewDecoder(r.Body).Decode(&request)
 	if err != nil {
 		errResponse(w, r, http.StatusBadRequest, err)
@@ -30,36 +27,33 @@ func (s *Server) linkCreate(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	link, err := s.app.Storage.Create(ctx, models.CreateLinkDTO{URL: *request.URL})
+	link, err := s.app.LinkCreate(r.Context(), models.CreateLinkDTO{URL: *request.URL})
+	if err != nil {
+		errResponse(w, r, http.StatusInternalServerError, err)
+		return
+	}
 
-	response(w, r, 201, link)
+	response(w, r, http.StatusCreated, link)
 }
 
 func (s *Server) linkGet(w http.ResponseWriter, r *http.Request) {
-	ctx := r.Context()
 	if r.Method != http.MethodGet {
 		errResponse(w, r, http.StatusMethodNotAllowed, errors.New("method not allowed"))
 		return
 	}
 
 	linkCode := strings.Trim(r.URL.Path, "/")
-	if len(linkCode) != s.app.Config.ShortLinkLength {
+	if !s.app.ValidateLinkCodeLength(linkCode) {
 		errResponse(w, r, http.StatusUnprocessableEntity, errors.New("link must be 10 symbols length"))
 		return
 	}
 
-	matchedInvalidSymbol, err := regexp.MatchString(shortLinkInvalidPattern, linkCode)
-	if err != nil {
-		errResponse(w, r, http.StatusInternalServerError, err)
-		return
-	}
-
-	if matchedInvalidSymbol {
+	if models.CompiledTemplate.MatchString(linkCode) {
 		errResponse(w, r, http.StatusUnprocessableEntity, errors.New("link contain restricted symbols"))
 		return
 	}
 
-	link, err := s.app.Storage.GetByCode(ctx, linkCode)
+	link, err := s.app.LinkGet(r.Context(), linkCode)
 
 	switch {
 	case errors.Is(err, models.ErrLinkNotFound):
@@ -70,5 +64,5 @@ func (s *Server) linkGet(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	response(w, r, 200, link)
+	response(w, r, http.StatusOK, link)
 }

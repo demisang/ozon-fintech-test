@@ -12,6 +12,7 @@ import (
 	"github.com/demisang/ozon-fintech-test/internal/store"
 	"github.com/demisang/ozon-fintech-test/internal/store/db"
 	"github.com/demisang/ozon-fintech-test/internal/store/memory"
+	"github.com/demisang/ozon-fintech-test/pkg/grpc"
 	"github.com/demisang/ozon-fintech-test/pkg/logger"
 	"github.com/sirupsen/logrus"
 	"golang.org/x/sync/errgroup"
@@ -51,13 +52,13 @@ func run() error {
 	}
 
 	// Init app
-	app, err := application.NewApp(log, cfg, storage)
-	if err != nil {
-		return fmt.Errorf("new application: %w", err)
-	}
+	app := application.NewApp(log, cfg, storage)
 
 	// Init server
 	server := rest.NewServer(log, app, cfg.Server.Host, cfg.Server.Port)
+
+	// Init gRPC server
+	grpcServer := grpc.NewLinksServer(app, log, "localhost:9000")
 
 	// Run
 	eg, ctx := errgroup.WithContext(ctx)
@@ -66,7 +67,9 @@ func run() error {
 		return server.Run(ctx)
 	})
 
-	// TODO gRPC here
+	eg.Go(func() error {
+		return grpcServer.Run(ctx)
+	})
 
 	return eg.Wait()
 }
